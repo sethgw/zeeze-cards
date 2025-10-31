@@ -62,8 +62,8 @@ COPY --from=builder --chown=bunjs:bunjs /app/apps/nextjs/public ./public
 
 USER bunjs
 
-EXPOSE 3000
-ENV PORT=3000
+EXPOSE 4271
+ENV PORT=4271
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["bun", "server.js"]
