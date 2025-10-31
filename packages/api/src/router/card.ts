@@ -99,7 +99,7 @@ Respond in JSON format:
           toughness: generated.toughness,
           class: generated.class,
         };
-      } catch (error) {
+      } catch {
         // Fallback if JSON parsing fails
         return {
           name: "Generated Card",
@@ -166,15 +166,10 @@ Respond in JSON format:
   create: protectedProcedure
     .input(CreateCardSchema)
     .mutation(async ({ ctx, input }) => {
-      // Generate slug from name if not provided
-      const slug =
-        input.slug ?? input.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-
       const [card] = await ctx.db
         .insert(Card)
         .values({
           ...input,
-          slug,
         })
         .returning();
 

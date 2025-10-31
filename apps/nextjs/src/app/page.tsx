@@ -1,19 +1,11 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import { Button } from "@zeeze/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@zeeze/ui/card";
 
-import { HydrateClient, prefetch, trpc } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 import { AuthShowcase } from "./_components/auth-showcase";
-import {
-  CreatePostForm,
-  PostCardSkeleton,
-  PostList,
-} from "./_components/posts";
 
 export default function HomePage() {
-  prefetch(trpc.post.all.queryOptions());
-
   return (
     <HydrateClient>
       <main className="container h-screen py-16">
@@ -72,25 +64,6 @@ export default function HomePage() {
                 </Button>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Demo Posts Section */}
-          <div className="w-full max-w-2xl">
-            <h2 className="mb-4 text-2xl font-bold">Recent Activity</h2>
-            <CreatePostForm />
-            <div className="mt-4 max-h-[400px] overflow-y-auto">
-              <Suspense
-                fallback={
-                  <div className="flex w-full flex-col gap-4">
-                    <PostCardSkeleton />
-                    <PostCardSkeleton />
-                    <PostCardSkeleton />
-                  </div>
-                }
-              >
-                <PostList />
-              </Suspense>
-            </div>
           </div>
         </div>
       </main>

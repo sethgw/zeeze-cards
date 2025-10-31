@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Badge } from "@zeeze/ui/badge";
 import { Card, CardContent, CardHeader } from "@zeeze/ui/card";
 import { cn } from "@zeeze/ui";
@@ -47,17 +48,9 @@ export function MTGCard({
   lore,
   className,
 }: MTGCardProps) {
-  // Determine card border color based on colors
-  const borderColor =
-    colors.length === 1
-      ? colors[0]
-      : colors.length > 1
-        ? "multi"
-        : "colorless";
-
   const gradientClass =
-    colors.length === 1
-      ? COLOR_GRADIENTS[colors[0]!]
+    colors.length === 1 && colors[0]
+      ? COLOR_GRADIENTS[colors[0]]
       : "from-amber-100 to-orange-100";
 
   return (
@@ -96,9 +89,11 @@ export function MTGCard({
         {/* Card Image */}
         {imageUrl ? (
           <div className="relative h-40 w-full overflow-hidden bg-gray-200">
-            <img
+            <Image
               src={imageUrl}
               alt={name}
+              width={280}
+              height={160}
               className="h-full w-full object-cover"
             />
           </div>
@@ -136,7 +131,7 @@ export function MTGCard({
         {/* Power/Toughness (for creatures) */}
         {power !== undefined && toughness !== undefined && (
           <div className="flex items-center justify-end px-3 py-2">
-            <div className="rounded-md bg-gradient-to-br from-amber-100 to-amber-200 px-3 py-1 font-bold">
+            <div className="rounded-sm bg-gradient-to-br from-amber-100 to-amber-200 px-3 py-1 font-bold">
               {power}/{toughness}
             </div>
           </div>
@@ -156,7 +151,8 @@ function parseManaSymbols(costString: string): string[] {
     // Check for numbers (generic mana)
     if (char && /[0-9]/.test(char)) {
       let numStr = char;
-      while (i + 1 < costString.length && /[0-9]/.test(costString[i + 1]!)) {
+      const nextChar = costString[i + 1];
+      while (i + 1 < costString.length && nextChar && /[0-9]/.test(nextChar)) {
         i++;
         numStr += costString[i];
       }
@@ -187,12 +183,12 @@ function ManaSymbol({ symbol }: { symbol: string }) {
 
   const colorClass = isNumber
     ? "bg-gray-200 border-gray-400 text-gray-700"
-    : colorClasses[symbol] || "bg-gray-200 border-gray-400";
+    : colorClasses[symbol] ?? "bg-gray-200 border-gray-400";
 
   return (
     <div
       className={cn(
-        "flex size-6 items-center justify-center rounded-full border-2 text-xs font-bold shadow-sm",
+        "flex size-6 items-center justify-center rounded-sm border-2 text-xs font-bold shadow-sm",
         colorClass,
       )}
     >

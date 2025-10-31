@@ -3,7 +3,7 @@
  * Handles turn structure and phase transitions
  */
 
-import type { GameState, Phase, Player } from "./types";
+import type { GameState, Phase } from "./types";
 import { emptyManaPool } from "./mana";
 
 /**
@@ -29,7 +29,11 @@ export function getNextPhase(currentPhase: Phase): Phase {
     return "untap"; // Start new turn
   }
 
-  return phaseOrder[currentIndex + 1]!;
+  const nextPhase = phaseOrder[currentIndex + 1];
+  if (!nextPhase) {
+    return "untap";
+  }
+  return nextPhase;
 }
 
 /**
@@ -63,7 +67,11 @@ export function advancePhase(state: GameState): GameState {
 
   if (currentPhase === "end") {
     newPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
-    newActivePlayerId = state.players[newPlayerIndex]!.id;
+    const nextActivePlayer = state.players[newPlayerIndex];
+    if (!nextActivePlayer) {
+      throw new Error("Next active player not found");
+    }
+    newActivePlayerId = nextActivePlayer.id;
   }
 
   // Update players based on phase
@@ -146,7 +154,11 @@ export function passPriority(state: GameState): GameState {
 
   const nextPriorityIndex =
     (currentPriorityIndex + 1) % state.players.length;
-  const nextPriorityPlayerId = state.players[nextPriorityIndex]!.id;
+  const nextPriorityPlayer = state.players[nextPriorityIndex];
+  if (!nextPriorityPlayer) {
+    throw new Error("Next priority player not found");
+  }
+  const nextPriorityPlayerId = nextPriorityPlayer.id;
 
   // If priority has passed all the way around and stack is empty, advance phase
   if (
@@ -185,10 +197,6 @@ export function canTakeAction(
     );
   }
 
-  // Instant-speed actions can be taken anytime with priority
-  if (actionType === "instant" || actionType === "ability") {
-    return true;
-  }
-
-  return false;
+  // Instant-speed actions (instant or ability) can be taken anytime with priority
+  return true;
 }

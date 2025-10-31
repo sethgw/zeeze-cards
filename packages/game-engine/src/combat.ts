@@ -3,7 +3,7 @@
  * Handles combat declaration, blocking, and damage calculation
  */
 
-import type { Attacker, Blocker, CardInPlay, GameState, Player } from "./types";
+import type { Attacker, Blocker, GameState } from "./types";
 import {
   canAttack,
   canBlock,
@@ -41,8 +41,12 @@ export function declareAttackers(
   const attackers: Attacker[] = [];
 
   for (let i = 0; i < attackingCreatureIds.length; i++) {
-    const creatureId = attackingCreatureIds[i]!;
+    const creatureId = attackingCreatureIds[i];
     const defenderId = defendingPlayerIds[i];
+
+    if (!creatureId) {
+      throw new Error(`Creature ID at index ${i} is undefined`);
+    }
 
     if (!defenderId) {
       throw new Error(`No defender specified for attacker ${creatureId}`);
@@ -88,7 +92,7 @@ export function declareAttackers(
  */
 export function declareBlockers(
   state: GameState,
-  blocks: Array<{ blockerId: string; attackerId: string }>,
+  blocks: { blockerId: string; attackerId: string }[],
 ): GameState {
   if (state.phase !== "combat_declare_blockers") {
     throw new Error("Can only declare blockers during declare blockers phase");

@@ -41,7 +41,8 @@ export function parseManaString(costString: string): ManaCost {
     if (char && /[0-9]/.test(char)) {
       let numStr = char;
       // Look ahead for multi-digit numbers
-      while (i + 1 < costString.length && /[0-9]/.test(costString[i + 1]!)) {
+      const nextChar = costString[i + 1];
+      while (i + 1 < costString.length && nextChar && /[0-9]/.test(nextChar)) {
         i++;
         numStr += costString[i];
       }
@@ -154,7 +155,7 @@ export function addMana(pool: ManaPool, mana: Partial<ManaPool>): ManaPool {
 /**
  * Empty a player's mana pool (happens at end of each phase)
  */
-export function emptyManaPool(pool: ManaPool): ManaPool {
+export function emptyManaPool(_pool: ManaPool): ManaPool {
   return createEmptyManaPool();
 }
 

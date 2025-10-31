@@ -165,7 +165,7 @@ export function PostCard(props: {
   );
 
   return (
-    <div className="bg-muted flex flex-row rounded-lg p-4">
+    <div className="bg-muted flex flex-row rounded-sm p-4">
       <div className="grow">
         <h2 className="text-primary text-2xl font-bold">{props.post.title}</h2>
         <p className="mt-2 text-sm">{props.post.content}</p>
@@ -186,7 +186,7 @@ export function PostCard(props: {
 export function PostCardSkeleton(props: { pulse?: boolean }) {
   const { pulse = true } = props;
   return (
-    <div className="bg-muted flex flex-row rounded-lg p-4">
+    <div className="bg-muted flex flex-row rounded-sm p-4">
       <div className="grow">
         <h2
           className={cn(

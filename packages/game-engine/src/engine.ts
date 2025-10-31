@@ -4,16 +4,15 @@
  */
 
 import type { CardInPlay, CardTemplate, GameAction, GameState, Player } from "./types";
-import { declareAttackers, declareBlockers, resolveCombatDamage } from "./combat";
+import { declareAttackers, declareBlockers } from "./combat";
 import { advancePhase, canTakeAction, passPriority } from "./phases";
-import { addMana, createEmptyManaPool, parseManaString, payManaCost } from "./mana";
-import { canAttack } from "./abilities";
+import { createEmptyManaPool, parseManaString, payManaCost } from "./mana";
 
 /**
  * Create a new game with players and their decks
  */
 export function createGame(
-  players: Array<{ id: string; name: string; deck: CardTemplate[] }>,
+  players: { id: string; name: string; deck: CardTemplate[] }[],
 ): GameState {
   if (players.length < 2 || players.length > 4) {
     throw new Error("Game must have 2-4 players");
@@ -60,7 +59,10 @@ export function createGame(
     };
   });
 
-  const firstPlayer = gamePlayers[0]!;
+  const firstPlayer = gamePlayers[0];
+  if (!firstPlayer) {
+    throw new Error("No players in game");
+  }
 
   return {
     id: `game-${Date.now()}`,
@@ -143,7 +145,10 @@ function playLand(state: GameState, playerId: string, instanceId: string): GameS
     throw new Error("Card not found in hand");
   }
 
-  const card = player.zones.hand[cardIndex]!;
+  const card = player.zones.hand[cardIndex];
+  if (!card) {
+    throw new Error("Card not found in hand at index");
+  }
   if (card.template.class !== "Land") {
     throw new Error("Card is not a land");
   }
@@ -167,7 +172,7 @@ function castSpell(
   state: GameState,
   playerId: string,
   instanceId: string,
-  targets?: string[],
+  _targets?: string[],
 ): GameState {
   const player = state.players.find((p) => p.id === playerId);
   if (!player) {
@@ -179,7 +184,10 @@ function castSpell(
     throw new Error("Card not found in hand");
   }
 
-  const card = player.zones.hand[cardIndex]!;
+  const card = player.zones.hand[cardIndex];
+  if (!card) {
+    throw new Error("Card not found in hand at index");
+  }
 
   // Check if can cast (sorcery speed vs instant speed)
   const speed = card.template.class === "Instant" ? "instant" : "sorcery";
@@ -237,7 +245,11 @@ function handleDeclareAttackers(
 
   // For simplicity, assume all attackers target the next player
   const defendingPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
-  const defendingPlayerId = state.players[defendingPlayerIndex]!.id;
+  const defendingPlayer = state.players[defendingPlayerIndex];
+  if (!defendingPlayer) {
+    throw new Error("Defending player not found");
+  }
+  const defendingPlayerId = defendingPlayer.id;
   const defenderIds = attackerIds.map(() => defendingPlayerId);
 
   return declareAttackers(state, attackerIds, defenderIds);
@@ -249,12 +261,12 @@ function handleDeclareAttackers(
 function handleDeclareBlockers(
   state: GameState,
   playerId: string,
-  blocks: Array<{ blockerId: string; attackerId: string }>,
+  blocks: { blockerId: string; attackerId: string }[],
 ): GameState {
   // Find defending player (not active player)
   const defendingPlayer = state.players.find((p) => p.id !== state.activePlayerId);
 
-  if (!defendingPlayer || defendingPlayer.id !== playerId) {
+  if (defendingPlayer?.id !== playerId) {
     throw new Error("You are not the defending player");
   }
 
@@ -268,10 +280,14 @@ function handleConcede(state: GameState, playerId: string): GameState {
   const remainingPlayers = state.players.filter((p) => p.id !== playerId);
 
   if (remainingPlayers.length === 1) {
+    const winner = remainingPlayers[0];
+    if (!winner) {
+      throw new Error("Winner not found");
+    }
     return {
       ...state,
       status: "completed",
-      winner: remainingPlayers[0]!.id,
+      winner: winner.id,
       updatedAt: new Date(),
     };
   }
@@ -291,10 +307,14 @@ export function checkGameEnd(state: GameState): GameState {
   const alivePlayers = state.players.filter((p) => p.life > 0);
 
   if (alivePlayers.length === 1) {
+    const winner = alivePlayers[0];
+    if (!winner) {
+      throw new Error("Winner not found");
+    }
     return {
       ...state,
       status: "completed",
-      winner: alivePlayers[0]!.id,
+      winner: winner.id,
       updatedAt: new Date(),
     };
   }
@@ -318,7 +338,12 @@ function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!];
+    const temp = shuffled[i];
+    const swapVal = shuffled[j];
+    if (temp !== undefined && swapVal !== undefined) {
+      shuffled[i] = swapVal;
+      shuffled[j] = temp;
+    }
   }
   return shuffled;
 }

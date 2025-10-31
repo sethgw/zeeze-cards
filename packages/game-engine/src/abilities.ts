@@ -3,7 +3,7 @@
  * Handles keyword abilities and their effects
  */
 
-import type { CardAbility, CardInPlay, GameState } from "./types";
+import type { CardInPlay, GameState } from "./types";
 
 /**
  * Check if a creature has a specific ability
@@ -184,7 +184,7 @@ export function triggerAbilities(
   card: CardInPlay,
   trigger: "ETB" | "DIES" | "ATTACK" | "BLOCK",
 ): GameState {
-  const triggeredAbilities = card.template.abilities.filter(
+  const _triggeredAbilities = card.template.abilities.filter(
     (ability) => ability.kind === "Triggered" && ability.code.startsWith(trigger),
   );
 
