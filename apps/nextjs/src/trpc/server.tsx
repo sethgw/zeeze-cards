@@ -1,5 +1,4 @@
 import type { QueryKey } from "@tanstack/react-query";
-import type { TRPCQueryOptions } from "@trpc/tanstack-react-query";
 import type { AppRouter } from "@zeeze/api";
 import { cache } from "react";
 import { headers } from "next/headers";
@@ -43,20 +42,16 @@ export function HydrateClient(props: { children: React.ReactNode }) {
   );
 }
 
-export function prefetch<T extends ReturnType<TRPCQueryOptions<AppRouter>>>(
-  queryOptions: T,
-) {
+export function prefetch<T extends { queryKey: QueryKey }>(queryOptions: T) {
   const queryClient = getQueryClient();
-  const queryKey = queryOptions.queryKey as QueryKey;
+  const queryKey = queryOptions.queryKey;
   if (
     queryKey[1] &&
     typeof queryKey[1] === "object" &&
     "type" in queryKey[1] &&
     queryKey[1].type === "infinite"
   ) {
-    void queryClient.prefetchInfiniteQuery(
-      queryOptions as TRPCQueryOptions<AppRouter> & { queryKey: QueryKey },
-    );
+    void queryClient.prefetchInfiniteQuery(queryOptions);
   } else {
     void queryClient.prefetchQuery(queryOptions);
   }

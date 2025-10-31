@@ -223,7 +223,7 @@ export default function CreateCardPage() {
                   <Label>Card Type (Optional)</Label>
                   <Select
                     value={cardType}
-                    onValueChange={setCardType}
+                    onValueChange={(value) => setCardType(value as CardClass)}
                     disabled={isGenerating}
                   >
                     <SelectTrigger>
