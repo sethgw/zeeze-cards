@@ -5,7 +5,7 @@ This app uses Minio/S3 for hosting static assets (JS, CSS, images) to reduce con
 ## Setup Overview
 
 1. **Push to GitHub** → triggers GitHub Action
-2. **GitHub Action** → calls Coolify webhook
+2. **GitHub Action** → calls Coolify API to trigger deployment
 3. **Coolify pre-deploy** → uploads static assets to Minio
 4. **Coolify build** → builds container with ASSET_PREFIX
 5. **Coolify deploy** → deploys container
@@ -21,9 +21,10 @@ A workflow already exists at `.github/workflows/deploy-nextjs.yml` that triggers
 
 **Add GitHub Secret:**
 
-1. Go to your repo → Settings → Secrets → Actions
-2. Add secret: `COOLIFY_WEBHOOK_URL`
-3. Value: Your Coolify webhook URL (found in Coolify project settings)
+1. Go to your repo → Settings → Secrets and variables → Actions
+2. Click "New repository secret"
+3. Add secret: `COOLIFY_API_TOKEN`
+4. Value: Your Coolify API token (found in Coolify → Settings → API Tokens)
 
 ### 2. Coolify Configuration
 
@@ -99,7 +100,7 @@ docker run -p 3000:3000 zeeze-nextjs:dev
 
 1. Make changes to `apps/nextjs/` or `packages/`
 2. Commit and push to `main` branch
-3. GitHub Action automatically triggers Coolify webhook
+3. GitHub Action automatically triggers Coolify deployment via API
 4. Coolify runs pre-deploy script → uploads assets to Minio
 5. Coolify builds and deploys container
 6. Done! Assets served from CDN, app from container
