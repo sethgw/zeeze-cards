@@ -15,10 +15,18 @@ jobs:
     steps:
       - name: Trigger Coolify Deployment
         run: |
-          curl -X POST "https://app.coolify.io/api/v1/deploy" \
-            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+          HTTP_STATUS=$(curl -X POST "https://app.coolify.io/api/v1/deploy" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "actor": "${{ github.actor }}"}'
+            -d '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "actor": "${{ github.actor }}"}' \
+            -s -o /dev/stderr -w "%{http_code}")
+          
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+            echo "❌ Deployment failed with HTTP status: $HTTP_STATUS"
+            exit 1
+          fi
+          
+          echo "✅ Deployment triggered successfully (HTTP $HTTP_STATUS)"
 
       - name: Deployment Triggered
         run: |
