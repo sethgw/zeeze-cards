@@ -51,7 +51,7 @@ export function prefetch<T extends { queryKey: QueryKey }>(queryOptions: T) {
     "type" in queryKey[1] &&
     queryKey[1].type === "infinite"
   ) {
-    void queryClient.prefetchInfiniteQuery(queryOptions);
+    void queryClient.prefetchInfiniteQuery(queryOptions as any);
   } else {
     void queryClient.prefetchQuery(queryOptions);
   }

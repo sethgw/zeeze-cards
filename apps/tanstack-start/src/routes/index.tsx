@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { CreatePostSchema } from "@zeeze/db/schema";
+import { CreateCardSchema } from "@zeeze/db/schema";
 import { cn } from "@zeeze/ui";
 import { Button } from "@zeeze/ui/button";
 import {
@@ -27,7 +27,7 @@ import { useTRPC } from "~/lib/trpc";
 export const Route = createFileRoute("/")({
   loader: ({ context }) => {
     const { trpc, queryClient } = context;
-    void queryClient.prefetchQuery(trpc.post.all.queryOptions());
+    void queryClient.prefetchQuery(trpc.card.list.queryOptions());
   },
   component: RouteComponent,
 });
@@ -41,18 +41,18 @@ function RouteComponent() {
         </h1>
         <AuthShowcase />
 
-        <CreatePostForm />
+        <CreateCardForm />
         <div className="w-full max-w-2xl overflow-y-scroll">
           <Suspense
             fallback={
               <div className="flex w-full flex-col gap-4">
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
+                <CardItemSkeleton />
+                <CardItemSkeleton />
+                <CardItemSkeleton />
               </div>
             }
           >
-            <PostList />
+            <CardList />
           </Suspense>
         </div>
       </div>
@@ -60,21 +60,21 @@ function RouteComponent() {
   );
 }
 
-function CreatePostForm() {
+function CreateCardForm() {
   const trpc = useTRPC();
 
   const queryClient = useQueryClient();
-  const createPost = useMutation(
-    trpc.post.create.mutationOptions({
+  const createCard = useMutation(
+    trpc.card.create.mutationOptions({
       onSuccess: async () => {
         form.reset();
-        await queryClient.invalidateQueries(trpc.post.pathFilter());
+        await queryClient.invalidateQueries(trpc.card.pathFilter());
       },
-      onError: (err) => {
+      onError: (err: any) => {
         toast.error(
           err.data?.code === "UNAUTHORIZED"
-            ? "You must be logged in to post"
-            : "Failed to create post",
+            ? "You must be logged in to create cards"
+            : "Failed to create card",
         );
       },
     }),
@@ -82,13 +82,16 @@ function CreatePostForm() {
 
   const form = useForm({
     defaultValues: {
-      content: "",
-      title: "",
+      name: "",
+      slug: "",
+      class: "Creature",
+      colors: [],
+      manaCost: "1",
+      rulesText: "",
+      edition: "Season 1",
+      createdBy: "demo-user",
     },
-    validators: {
-      onSubmit: CreatePostSchema,
-    },
-    onSubmit: (data) => createPost.mutate(data.value),
+    onSubmit: (data: any) => createCard.mutate(data.value),
   });
 
   return (
@@ -101,23 +104,30 @@ function CreatePostForm() {
     >
       <FieldGroup>
         <form.Field
-          name="title"
+          name="name"
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldContent>
-                  <FieldLabel htmlFor={field.name}>Bug Title</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Card Name</FieldLabel>
                 </FieldContent>
                 <Input
                   id={field.name}
                   name={field.name}
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                    // Auto-generate slug
+                    form.setFieldValue(
+                      "slug",
+                      e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                    );
+                  }}
                   aria-invalid={isInvalid}
-                  placeholder="Title"
+                  placeholder="Card Name"
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -125,14 +135,14 @@ function CreatePostForm() {
           }}
         />
         <form.Field
-          name="content"
+          name="rulesText"
           children={(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <Field data-invalid={isInvalid}>
                 <FieldContent>
-                  <FieldLabel htmlFor={field.name}>Content</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Rules Text</FieldLabel>
                 </FieldContent>
                 <Input
                   id={field.name}
@@ -141,7 +151,7 @@ function CreatePostForm() {
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
                   aria-invalid={isInvalid}
-                  placeholder="Content"
+                  placeholder="What does this card do?"
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -149,24 +159,24 @@ function CreatePostForm() {
           }}
         />
       </FieldGroup>
-      <Button type="submit">Create</Button>
+      <Button type="submit">Create Card</Button>
     </form>
   );
 }
 
-function PostList() {
+function CardList() {
   const trpc = useTRPC();
-  const { data: posts } = useSuspenseQuery(trpc.post.all.queryOptions());
+  const { data: cards } = useSuspenseQuery(trpc.card.list.queryOptions());
 
-  if (posts.length === 0) {
+  if (cards.length === 0) {
     return (
       <div className="relative flex w-full flex-col gap-4">
-        <PostCardSkeleton pulse={false} />
-        <PostCardSkeleton pulse={false} />
-        <PostCardSkeleton pulse={false} />
+        <CardItemSkeleton pulse={false} />
+        <CardItemSkeleton pulse={false} />
+        <CardItemSkeleton pulse={false} />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10">
-          <p className="text-2xl font-bold text-white">No posts yet</p>
+          <p className="text-2xl font-bold text-white">No cards yet</p>
         </div>
       </div>
     );
@@ -174,26 +184,26 @@ function PostList() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      {posts.map((p) => {
-        return <PostCard key={p.id} post={p} />;
+      {cards.map((c: any) => {
+        return <CardItem key={c.id} card={c} />;
       })}
     </div>
   );
 }
 
-function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
+function CardItem(props: { card: RouterOutputs["card"]["list"][number] }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const deletePost = useMutation(
-    trpc.post.delete.mutationOptions({
+  const deleteCard = useMutation(
+    trpc.card.delete.mutationOptions({
       onSuccess: async () => {
-        await queryClient.invalidateQueries(trpc.post.pathFilter());
+        await queryClient.invalidateQueries(trpc.card.pathFilter());
       },
-      onError: (err) => {
+      onError: (err: any) => {
         toast.error(
           err.data?.code === "UNAUTHORIZED"
-            ? "You must be logged in to delete a post"
-            : "Failed to delete post",
+            ? "You must be logged in to delete a card"
+            : "Failed to delete card",
         );
       },
     }),
@@ -202,14 +212,19 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
   return (
     <div className="bg-muted flex flex-row rounded-lg p-4">
       <div className="grow">
-        <h2 className="text-primary text-2xl font-bold">{props.post.title}</h2>
-        <p className="mt-2 text-sm">{props.post.content}</p>
+        <h2 className="text-primary text-2xl font-bold">
+          {props.card.name} <span className="text-sm">({props.card.class})</span>
+        </h2>
+        <p className="mt-2 text-sm">{props.card.rulesText}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Mana Cost: {props.card.manaCost}
+        </p>
       </div>
       <div>
         <Button
           variant="ghost"
           className="text-primary cursor-pointer text-sm font-bold uppercase hover:bg-transparent hover:text-white"
-          onClick={() => deletePost.mutate(props.post.id)}
+          onClick={() => deleteCard.mutate({ id: props.card.id })}
         >
           Delete
         </Button>
@@ -218,7 +233,7 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
   );
 }
 
-function PostCardSkeleton(props: { pulse?: boolean }) {
+function CardItemSkeleton(props: { pulse?: boolean }) {
   const { pulse = true } = props;
   return (
     <div className="bg-muted flex flex-row rounded-lg p-4">
