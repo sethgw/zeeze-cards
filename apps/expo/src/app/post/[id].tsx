@@ -18,11 +18,13 @@ export default function Card() {
           {data.name}
         </Text>
         {data.manaCost && (
-          <Text className="text-foreground py-2">Mana Cost: {data.manaCost}</Text>
+          <Text className="text-foreground py-2">
+            Mana Cost: {data.manaCost}
+          </Text>
         )}
         <Text className="text-foreground py-2">{data.rulesText}</Text>
         {data.lore && (
-          <Text className="text-muted-foreground italic py-4">{data.lore}</Text>
+          <Text className="text-muted-foreground py-4 italic">{data.lore}</Text>
         )}
       </View>
     </SafeAreaView>
