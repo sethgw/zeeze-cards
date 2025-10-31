@@ -17,6 +17,7 @@ RUN apk add --no-cache libc6-compat
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HUSKY=0
+ENV SKIP_ENV_VALIDATION=1
 
 # Copy workspace configuration files
 COPY package.json turbo.json ./
@@ -28,7 +29,9 @@ COPY packages/ ./packages/
 COPY tooling/ ./tooling/
 
 # Install dependencies using bun with workspace support
-RUN bun install --frozen-lockfile
+# --ignore-scripts skips native module compilation (bufferutil, better-sqlite3)
+# These are optional performance optimizations that aren't needed in production
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # Add build arguments for environment variables
 ARG ASSET_PREFIX
@@ -37,7 +40,14 @@ ENV ASSET_PREFIX=${ASSET_PREFIX}
 
 # Build the nextjs app specifically
 WORKDIR /app/apps/nextjs
-RUN bun run build
+# Skip env validation during build (secrets provided at runtime)
+# Provide dummy values for env vars that may be imported during build
+RUN SKIP_ENV_VALIDATION=1 \
+    POSTGRES_URL=postgresql://dummy:dummy@localhost:5432/dummy \
+    AUTH_SECRET=dummy-secret-for-build-only \
+    AUTH_DISCORD_ID=dummy \
+    AUTH_DISCORD_SECRET=dummy \
+    bun run next build
 
 # ---- Static Assets Stage (for CDN extraction) ----
 FROM scratch AS static-assets
