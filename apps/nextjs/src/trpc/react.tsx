@@ -1,6 +1,7 @@
 "use client";
 
 import type { QueryClient } from "@tanstack/react-query";
+import type { AppRouter } from "@zeeze/api";
 import { useState } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -10,8 +11,6 @@ import {
 } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import SuperJSON from "superjson";
-
-import type { AppRouter } from "@zeeze/api";
 
 import { env } from "~/env";
 import { createQueryClient } from "./query-client";

@@ -27,12 +27,12 @@ export function declareAttackers(
   defendingPlayerIds: string[],
 ): GameState {
   if (state.phase !== "combat_declare_attackers") {
-    throw new Error("Can only declare attackers during declare attackers phase");
+    throw new Error(
+      "Can only declare attackers during declare attackers phase",
+    );
   }
 
-  const activePlayer = state.players.find(
-    (p) => p.id === state.activePlayerId,
-  );
+  const activePlayer = state.players.find((p) => p.id === state.activePlayerId);
   if (!activePlayer) {
     throw new Error("Active player not found");
   }

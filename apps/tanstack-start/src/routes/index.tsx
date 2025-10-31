@@ -1,3 +1,4 @@
+import type { RouterOutputs } from "@zeeze/api";
 import { Suspense } from "react";
 import { useForm } from "@tanstack/react-form";
 import {
@@ -7,7 +8,6 @@ import {
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import type { RouterOutputs } from "@zeeze/api";
 import { CreatePostSchema } from "@zeeze/db/schema";
 import { cn } from "@zeeze/ui";
 import { Button } from "@zeeze/ui/button";

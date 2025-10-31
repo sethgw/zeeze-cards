@@ -9,7 +9,9 @@ import type { CardInPlay, GameState } from "./types";
  * Check if a creature has a specific ability
  */
 export function hasAbility(card: CardInPlay, abilityCode: string): boolean {
-  return card.template.abilities.some((ability) => ability.code === abilityCode);
+  return card.template.abilities.some(
+    (ability) => ability.code === abilityCode,
+  );
 }
 
 /**
@@ -185,7 +187,8 @@ export function triggerAbilities(
   trigger: "ETB" | "DIES" | "ATTACK" | "BLOCK",
 ): GameState {
   const _triggeredAbilities = card.template.abilities.filter(
-    (ability) => ability.kind === "Triggered" && ability.code.startsWith(trigger),
+    (ability) =>
+      ability.kind === "Triggered" && ability.code.startsWith(trigger),
   );
 
   // TODO: Implement full triggered ability resolution

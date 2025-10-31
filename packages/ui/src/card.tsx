@@ -1,13 +1,10 @@
 import { cn } from "@zeeze/ui";
 
-export function Card({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "rounded-sm border bg-card text-card-foreground shadow",
+        "bg-card text-card-foreground rounded-sm border shadow",
         className,
       )}
       {...props}
@@ -33,7 +30,7 @@ export function CardTitle({
 }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("font-semibold leading-none tracking-tight", className)}
+      className={cn("leading-none font-semibold tracking-tight", className)}
       {...props}
     />
   );
@@ -45,7 +42,7 @@ export function CardDescription({
 }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   );
@@ -63,9 +60,6 @@ export function CardFooter({
   ...props
 }: React.ComponentProps<"div">) {
   return (
-    <div
-      className={cn("flex items-center p-6 pt-0", className)}
-      {...props}
-    />
+    <div className={cn("flex items-center p-6 pt-0", className)} {...props} />
   );
 }

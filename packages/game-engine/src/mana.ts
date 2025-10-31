@@ -64,15 +64,7 @@ export function parseManaString(costString: string): ManaCost {
  * Calculate the total converted mana cost (CMC)
  */
 export function calculateCMC(cost: ManaCost): number {
-  return (
-    cost.generic +
-    cost.W +
-    cost.U +
-    cost.B +
-    cost.R +
-    cost.G +
-    cost.C
-  );
+  return cost.generic + cost.W + cost.U + cost.B + cost.R + cost.G + cost.C;
 }
 
 /**
@@ -100,10 +92,7 @@ export function canPayCost(pool: ManaPool, cost: ManaCost): boolean {
  * Pay a mana cost from a player's mana pool
  * Returns the new mana pool after payment, or null if cannot pay
  */
-export function payManaCost(
-  pool: ManaPool,
-  cost: ManaCost,
-): ManaPool | null {
+export function payManaCost(pool: ManaPool, cost: ManaCost): ManaPool | null {
   if (!canPayCost(pool, cost)) {
     return null;
   }

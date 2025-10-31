@@ -1,6 +1,13 @@
 import Link from "next/link";
+
 import { Button } from "@zeeze/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@zeeze/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@zeeze/ui/card";
 
 import { HydrateClient } from "~/trpc/server";
 import { AuthShowcase } from "./_components/auth-showcase";
@@ -14,7 +21,7 @@ export default function HomePage() {
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
               Zeeze <span className="text-primary">Cards</span>
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="text-muted-foreground mt-4 text-lg">
               Create and collect AI-powered MTG-style cards
             </p>
           </div>

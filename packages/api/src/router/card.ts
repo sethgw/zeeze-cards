@@ -1,6 +1,6 @@
 import type { TRPCRouterRecord } from "@trpc/server";
-import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
 import { z } from "zod/v4";
 
 import { and, desc, eq, ilike } from "@zeeze/db";

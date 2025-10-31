@@ -1,5 +1,12 @@
 import { relations, sql } from "drizzle-orm";
-import { integer, jsonb, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
+import {
+  integer,
+  jsonb,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  text,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -292,6 +299,7 @@ export const GameMessageRelations = relations(GameMessage, ({ one }) => ({
 export const CreateCardSchema = createInsertSchema(Card, {
   name: z.string().min(1).max(256),
   slug: z.string().min(1).max(256),
+  colors: z.array(z.string()),
   manaCost: z.string().min(1).max(50),
   rulesText: z.string(),
   edition: z.string().min(1).max(256),
@@ -307,7 +315,9 @@ export const CreateCardSchema = createInsertSchema(Card, {
 export const CreateDeckSchema = createInsertSchema(Deck, {
   name: z.string().min(1).max(256),
   userId: z.string().min(1),
-  cards: z.array(z.object({ cardId: z.number(), count: z.number().min(1).max(4) })),
+  cards: z.array(
+    z.object({ cardId: z.number(), count: z.number().min(1).max(4) }),
+  ),
 }).omit({
   id: true,
   createdAt: true,

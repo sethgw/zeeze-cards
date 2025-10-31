@@ -195,9 +195,17 @@ export type GameAction =
   | { type: "PASS_PHASE" }
   | { type: "PLAY_LAND"; instanceId: string }
   | { type: "CAST_SPELL"; instanceId: string; targets?: string[] }
-  | { type: "ACTIVATE_ABILITY"; instanceId: string; abilityCode: string; targets?: string[] }
+  | {
+      type: "ACTIVATE_ABILITY";
+      instanceId: string;
+      abilityCode: string;
+      targets?: string[];
+    }
   | { type: "DECLARE_ATTACKERS"; attackers: string[] }
-  | { type: "DECLARE_BLOCKERS"; blocks: { blockerId: string; attackerId: string }[] }
+  | {
+      type: "DECLARE_BLOCKERS";
+      blocks: { blockerId: string; attackerId: string }[];
+    }
   | { type: "CONCEDE" }
   | { type: "MULLIGAN" };
 
@@ -212,7 +220,12 @@ export type GameEvent =
   | { type: "CARD_DRAWN"; playerId: string; cardId: string }
   | { type: "CARD_PLAYED"; playerId: string; instanceId: string }
   | { type: "SPELL_CAST"; playerId: string; instanceId: string }
-  | { type: "ABILITY_ACTIVATED"; playerId: string; instanceId: string; abilityCode: string }
+  | {
+      type: "ABILITY_ACTIVATED";
+      playerId: string;
+      instanceId: string;
+      abilityCode: string;
+    }
   | { type: "CREATURE_ATTACKED"; instanceId: string; defenderId: string }
   | { type: "CREATURE_BLOCKED"; attackerId: string; blockerId: string }
   | { type: "DAMAGE_DEALT"; sourceId: string; targetId: string; amount: number }

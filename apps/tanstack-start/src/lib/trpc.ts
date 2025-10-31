@@ -1,3 +1,4 @@
+import type { AppRouter } from "@zeeze/api";
 import {
   createTRPCClient,
   httpBatchStreamLink,
@@ -5,8 +6,6 @@ import {
 } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import SuperJSON from "superjson";
-
-import type { AppRouter } from "@zeeze/api";
 
 import { env } from "~/env";
 import { getBaseUrl } from "~/lib/url";

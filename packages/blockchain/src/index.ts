@@ -46,8 +46,14 @@ export function mintCard(options: MintOptions): Promise<CardInstance> {
     contentHash: options.contentHash,
     owner: options.wallet,
     path: options.path,
-    attUID: options.path === "EAS" ? `0x${Math.random().toString(16).slice(2)}` : undefined,
-    tokenId1155: options.path === "ERC1155" ? `0x${Math.random().toString(16).slice(2)}` : undefined,
+    attUID:
+      options.path === "EAS"
+        ? `0x${Math.random().toString(16).slice(2)}`
+        : undefined,
+    tokenId1155:
+      options.path === "ERC1155"
+        ? `0x${Math.random().toString(16).slice(2)}`
+        : undefined,
     txHash: `0x${Math.random().toString(16).slice(2)}`,
   });
 }
@@ -65,7 +71,9 @@ export function transferCard(
   // - For EAS: Revoke old attestation, create new one with refUID
   // - For ERC-1155: Standard safeTransferFrom
 
-  console.warn("[STUB] transferCard called - not yet implemented on blockchain");
+  console.warn(
+    "[STUB] transferCard called - not yet implemented on blockchain",
+  );
 
   return Promise.resolve({
     key: instanceKey,
@@ -88,7 +96,9 @@ export function getWalletCards(_wallet: string): Promise<CardInstance[]> {
   // - Query EAS attestations where recipient = wallet
   // - Query ERC-1155 balances for this wallet
 
-  console.warn("[STUB] getWalletCards called - not yet implemented on blockchain");
+  console.warn(
+    "[STUB] getWalletCards called - not yet implemented on blockchain",
+  );
 
   return Promise.resolve([]);
 }
@@ -102,7 +112,9 @@ export function promoteToNFT(_attUID: string): Promise<CardInstance> {
   // - Revoke EAS attestation
   // - Mint ERC-1155 with same (cardId, comboId, rarityId, contentHash)
 
-  console.warn("[STUB] promoteToNFT called - not yet implemented on blockchain");
+  console.warn(
+    "[STUB] promoteToNFT called - not yet implemented on blockchain",
+  );
 
   return Promise.resolve({
     key: `0x${Math.random().toString(16).slice(2)}`,

@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
+
+import { cn } from "@zeeze/ui";
 import { Badge } from "@zeeze/ui/badge";
 import { Card, CardContent, CardHeader } from "@zeeze/ui/card";
-import { cn } from "@zeeze/ui";
 
 interface MTGCardProps {
   name: string;
@@ -70,10 +71,8 @@ export function MTGCard({
       >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="text-lg font-bold leading-tight">{name}</h3>
-            {cardClass && (
-              <p className="text-xs opacity-80">{cardClass}</p>
-            )}
+            <h3 className="text-lg leading-tight font-bold">{name}</h3>
+            {cardClass && <p className="text-xs opacity-80">{cardClass}</p>}
           </div>
           {manaCost && (
             <div className="ml-2 flex items-center gap-0.5">
@@ -124,7 +123,7 @@ export function MTGCard({
         {/* Lore/Flavor Text */}
         {lore && (
           <div className="border-b px-3 py-2">
-            <p className="text-xs italic text-muted-foreground">{lore}</p>
+            <p className="text-muted-foreground text-xs italic">{lore}</p>
           </div>
         )}
 
@@ -183,7 +182,7 @@ function ManaSymbol({ symbol }: { symbol: string }) {
 
   const colorClass = isNumber
     ? "bg-gray-200 border-gray-400 text-gray-700"
-    : colorClasses[symbol] ?? "bg-gray-200 border-gray-400";
+    : (colorClasses[symbol] ?? "bg-gray-200 border-gray-400");
 
   return (
     <div

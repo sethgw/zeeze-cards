@@ -65,7 +65,9 @@
     --muted-foreground: oklch(0.75 0.02 78);
     --accent: oklch(0.68 0.093 68); /* Desert Sun */
     --accent-foreground: oklch(0.29 0.027 309); /* Ebony */
-    --destructive: oklch(0.55 0.23 25); /* Scarlet (slightly brighter for dark mode) */
+    --destructive: oklch(
+      0.55 0.23 25
+    ); /* Scarlet (slightly brighter for dark mode) */
     --destructive-foreground: oklch(0.98 0.005 78);
     --border: oklch(0.4 0.028 309);
     --input: oklch(0.34 0.03 309);

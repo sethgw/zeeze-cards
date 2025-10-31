@@ -1,5 +1,8 @@
 {
   "extends": "@zeeze/tsconfig/compiled-package.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
   "include": ["src"],
   "exclude": ["node_modules"]
 }

@@ -3,10 +3,16 @@
  * Orchestrates game initialization, actions, and state management
  */
 
-import type { CardInPlay, CardTemplate, GameAction, GameState, Player } from "./types";
+import type {
+  CardInPlay,
+  CardTemplate,
+  GameAction,
+  GameState,
+  Player,
+} from "./types";
 import { declareAttackers, declareBlockers } from "./combat";
-import { advancePhase, canTakeAction, passPriority } from "./phases";
 import { createEmptyManaPool, parseManaString, payManaCost } from "./mana";
+import { advancePhase, canTakeAction, passPriority } from "./phases";
 
 /**
  * Create a new game with players and their decks
@@ -87,7 +93,11 @@ export function createGame(
 /**
  * Process a game action and return the new state
  */
-export function processAction(state: GameState, playerId: string, action: GameAction): GameState {
+export function processAction(
+  state: GameState,
+  playerId: string,
+  action: GameAction,
+): GameState {
   // Check if game is over
   if (state.status === "completed") {
     throw new Error("Game is already completed");
@@ -126,7 +136,11 @@ export function processAction(state: GameState, playerId: string, action: GameAc
 /**
  * Play a land card from hand
  */
-function playLand(state: GameState, playerId: string, instanceId: string): GameState {
+function playLand(
+  state: GameState,
+  playerId: string,
+  instanceId: string,
+): GameState {
   if (!canTakeAction(state, playerId, "land")) {
     throw new Error("Cannot play land at this time");
   }
@@ -140,7 +154,9 @@ function playLand(state: GameState, playerId: string, instanceId: string): GameS
     throw new Error("Already played a land this turn");
   }
 
-  const cardIndex = player.zones.hand.findIndex((c) => c.instanceId === instanceId);
+  const cardIndex = player.zones.hand.findIndex(
+    (c) => c.instanceId === instanceId,
+  );
   if (cardIndex === -1) {
     throw new Error("Card not found in hand");
   }
@@ -179,7 +195,9 @@ function castSpell(
     throw new Error("Player not found");
   }
 
-  const cardIndex = player.zones.hand.findIndex((c) => c.instanceId === instanceId);
+  const cardIndex = player.zones.hand.findIndex(
+    (c) => c.instanceId === instanceId,
+  );
   if (cardIndex === -1) {
     throw new Error("Card not found in hand");
   }
@@ -208,7 +226,11 @@ function castSpell(
   // Move card based on type
   player.zones.hand.splice(cardIndex, 1);
 
-  if (card.template.class === "Creature" || card.template.class === "Artifact" || card.template.class === "Enchantment") {
+  if (
+    card.template.class === "Creature" ||
+    card.template.class === "Artifact" ||
+    card.template.class === "Enchantment"
+  ) {
     // Permanents go to battlefield
     card.zone = "battlefield";
     if (card.template.class === "Creature") {
@@ -244,7 +266,8 @@ function handleDeclareAttackers(
   }
 
   // For simplicity, assume all attackers target the next player
-  const defendingPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  const defendingPlayerIndex =
+    (state.currentPlayerIndex + 1) % state.players.length;
   const defendingPlayer = state.players[defendingPlayerIndex];
   if (!defendingPlayer) {
     throw new Error("Defending player not found");
@@ -264,7 +287,9 @@ function handleDeclareBlockers(
   blocks: { blockerId: string; attackerId: string }[],
 ): GameState {
   // Find defending player (not active player)
-  const defendingPlayer = state.players.find((p) => p.id !== state.activePlayerId);
+  const defendingPlayer = state.players.find(
+    (p) => p.id !== state.activePlayerId,
+  );
 
   if (defendingPlayer?.id !== playerId) {
     throw new Error("You are not the defending player");

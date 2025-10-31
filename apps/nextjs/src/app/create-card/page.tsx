@@ -1,17 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@zeeze/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@zeeze/ui/card";
-import { Textarea } from "@zeeze/ui/textarea";
-import { Label } from "@zeeze/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@zeeze/ui/select";
-import { toast } from "@zeeze/ui/toast";
+import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+
+import { Button } from "@zeeze/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@zeeze/ui/card";
+import { Label } from "@zeeze/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@zeeze/ui/select";
+import { Textarea } from "@zeeze/ui/textarea";
+import { toast } from "@zeeze/ui/toast";
 
 import { useTRPC } from "~/trpc/react";
 import { MTGCard } from "../_components/mtg-card";
-import { useMutation } from "@tanstack/react-query";
 
 interface GeneratedCard {
   name: string;
@@ -20,24 +33,46 @@ interface GeneratedCard {
   manaCost: string;
   power?: number;
   toughness?: number;
-  cardClass: "Creature" | "Sorcery" | "Instant" | "Artifact" | "Enchantment" | "Land" | "Planeswalker";
+  cardClass:
+    | "Creature"
+    | "Sorcery"
+    | "Instant"
+    | "Artifact"
+    | "Enchantment"
+    | "Land"
+    | "Planeswalker";
   imageUrl: string;
   slug: string;
   colors: string[];
 }
 
+type CardClass =
+  | "Creature"
+  | "Sorcery"
+  | "Instant"
+  | "Artifact"
+  | "Enchantment"
+  | "Land"
+  | "Planeswalker";
+
 export default function CreateCardPage() {
   const trpc = useTRPC();
 
   const [prompt, setPrompt] = useState("");
-  const [cardType, setCardType] = useState<string | undefined>(undefined);
+  const [cardType, setCardType] = useState<CardClass | undefined>(undefined);
   const [colors, setColors] = useState<string[]>([]);
-  const [generatedCard, setGeneratedCard] = useState<GeneratedCard | null>(null);
+  const [generatedCard, setGeneratedCard] = useState<GeneratedCard | null>(
+    null,
+  );
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRegeneratingImage, setIsRegeneratingImage] = useState(false);
 
-  const generateLoreMutation = useMutation(trpc.card.generateLore.mutationOptions({}));
-  const generateImageMutation = useMutation(trpc.card.generateImage.mutationOptions({}));
+  const generateLoreMutation = useMutation(
+    trpc.card.generateLore.mutationOptions({}),
+  );
+  const generateImageMutation = useMutation(
+    trpc.card.generateImage.mutationOptions({}),
+  );
   const createCardMutation = useMutation(trpc.card.create.mutationOptions({}));
 
   const handleCreateCard = async () => {
@@ -46,12 +81,17 @@ export default function CreateCardPage() {
       return;
     }
 
+    if (!cardType) {
+      toast.error("Please select a card type");
+      return;
+    }
+
     setIsGenerating(true);
     try {
       // Step 1: Generate card lore and mechanics
       const loreResult = await generateLoreMutation.mutateAsync({
         prompt,
-        cardClass: cardType as any,
+        cardClass: cardType,
         colors: colors as ("W" | "U" | "B" | "R" | "G" | "C")[],
       });
 
@@ -205,16 +245,42 @@ export default function CreateCardPage() {
                   <Label>Colors (Optional)</Label>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      { code: "W", name: "White", class: "bg-amber-100 hover:bg-amber-200" },
-                      { code: "U", name: "Blue", class: "bg-blue-100 hover:bg-blue-200" },
-                      { code: "B", name: "Black", class: "bg-gray-800 text-white hover:bg-gray-900" },
-                      { code: "R", name: "Red", class: "bg-red-100 hover:bg-red-200" },
-                      { code: "G", name: "Green", class: "bg-green-100 hover:bg-green-200" },
-                      { code: "C", name: "Colorless", class: "bg-gray-100 hover:bg-gray-200" },
+                      {
+                        code: "W",
+                        name: "White",
+                        class: "bg-amber-100 hover:bg-amber-200",
+                      },
+                      {
+                        code: "U",
+                        name: "Blue",
+                        class: "bg-blue-100 hover:bg-blue-200",
+                      },
+                      {
+                        code: "B",
+                        name: "Black",
+                        class: "bg-gray-800 text-white hover:bg-gray-900",
+                      },
+                      {
+                        code: "R",
+                        name: "Red",
+                        class: "bg-red-100 hover:bg-red-200",
+                      },
+                      {
+                        code: "G",
+                        name: "Green",
+                        class: "bg-green-100 hover:bg-green-200",
+                      },
+                      {
+                        code: "C",
+                        name: "Colorless",
+                        class: "bg-gray-100 hover:bg-gray-200",
+                      },
                     ].map((color) => (
                       <Button
                         key={color.code}
-                        variant={colors.includes(color.code) ? "default" : "outline"}
+                        variant={
+                          colors.includes(color.code) ? "default" : "outline"
+                        }
                         size="sm"
                         onClick={() => toggleColor(color.code)}
                         className={color.class}
@@ -253,7 +319,7 @@ export default function CreateCardPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <div className="rounded-sm bg-muted p-4 space-y-2">
+                  <div className="bg-muted space-y-2 rounded-sm p-4">
                     <div>
                       <strong className="text-sm">Name:</strong>
                       <p className="text-lg">{generatedCard.name}</p>
@@ -266,12 +332,15 @@ export default function CreateCardPage() {
                       <strong className="text-sm">Mana Cost:</strong>
                       <p>{generatedCard.manaCost}</p>
                     </div>
-                    {generatedCard.power !== undefined && generatedCard.toughness !== undefined && (
-                      <div>
-                        <strong className="text-sm">Power/Toughness:</strong>
-                        <p>{generatedCard.power}/{generatedCard.toughness}</p>
-                      </div>
-                    )}
+                    {generatedCard.power !== undefined &&
+                      generatedCard.toughness !== undefined && (
+                        <div>
+                          <strong className="text-sm">Power/Toughness:</strong>
+                          <p>
+                            {generatedCard.power}/{generatedCard.toughness}
+                          </p>
+                        </div>
+                      )}
                   </div>
                 </div>
 
@@ -310,9 +379,11 @@ export default function CreateCardPage() {
           <div className="flex flex-col items-center">
             <Label className="mb-4 text-lg font-semibold">Card Preview</Label>
             {isGenerating ? (
-              <div className="flex flex-col items-center justify-center h-96 w-full bg-muted rounded-sm">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="mt-4 text-muted-foreground">Generating your card...</p>
+              <div className="bg-muted flex h-96 w-full flex-col items-center justify-center rounded-sm">
+                <Loader2 className="text-primary h-12 w-12 animate-spin" />
+                <p className="text-muted-foreground mt-4">
+                  Generating your card...
+                </p>
               </div>
             ) : generatedCard ? (
               <MTGCard
@@ -327,7 +398,7 @@ export default function CreateCardPage() {
                 lore={generatedCard.lore}
               />
             ) : (
-              <div className="flex items-center justify-center h-96 w-full bg-muted rounded-sm text-muted-foreground">
+              <div className="bg-muted text-muted-foreground flex h-96 w-full items-center justify-center rounded-sm">
                 Enter a card concept to begin
               </div>
             )}

@@ -9,8 +9,8 @@ import type { RouterOutputs } from "~/utils/api";
 import { trpc } from "~/utils/api";
 import { authClient } from "~/utils/auth";
 
-function PostCard(props: {
-  post: RouterOutputs["post"]["all"][number];
+function CardItem(props: {
+  card: RouterOutputs["card"]["list"][number];
   onDelete: () => void;
 }) {
   return (
@@ -20,14 +20,14 @@ function PostCard(props: {
           asChild
           href={{
             pathname: "/post/[id]",
-            params: { id: props.post.id },
+            params: { id: props.card.id.toString() },
           }}
         >
           <Pressable className="">
             <Text className="text-primary text-xl font-semibold">
-              {props.post.title}
+              {props.card.name}
             </Text>
-            <Text className="text-foreground mt-2">{props.post.content}</Text>
+            <Text className="text-foreground mt-2">{props.card.rulesText}</Text>
           </Pressable>
         </Link>
       </View>
@@ -38,18 +38,18 @@ function PostCard(props: {
   );
 }
 
-function CreatePost() {
+function CreateCard() {
   const queryClient = useQueryClient();
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [name, setName] = useState("");
+  const [rulesText, setRulesText] = useState("");
 
   const { mutate, error } = useMutation(
-    trpc.post.create.mutationOptions({
+    trpc.card.create.mutationOptions({
       async onSuccess() {
-        setTitle("");
-        setContent("");
-        await queryClient.invalidateQueries(trpc.post.all.queryFilter());
+        setName("");
+        setRulesText("");
+        await queryClient.invalidateQueries(trpc.card.list.queryFilter());
       },
     }),
   );
@@ -58,40 +58,46 @@ function CreatePost() {
     <View className="mt-4 flex gap-2">
       <TextInput
         className="border-input bg-background text-foreground items-center rounded-md border px-3 text-lg leading-tight"
-        value={title}
-        onChangeText={setTitle}
-        placeholder="Title"
+        value={name}
+        onChangeText={setName}
+        placeholder="Card Name"
       />
-      {error?.data?.zodError?.fieldErrors.title && (
+      {error?.data?.zodError?.fieldErrors.name && (
         <Text className="text-destructive mb-2">
-          {error.data.zodError.fieldErrors.title}
+          {error.data.zodError.fieldErrors.name}
         </Text>
       )}
       <TextInput
         className="border-input bg-background text-foreground items-center rounded-md border px-3 text-lg leading-tight"
-        value={content}
-        onChangeText={setContent}
-        placeholder="Content"
+        value={rulesText}
+        onChangeText={setRulesText}
+        placeholder="Rules Text"
       />
-      {error?.data?.zodError?.fieldErrors.content && (
+      {error?.data?.zodError?.fieldErrors.rulesText && (
         <Text className="text-destructive mb-2">
-          {error.data.zodError.fieldErrors.content}
+          {error.data.zodError.fieldErrors.rulesText}
         </Text>
       )}
       <Pressable
         className="bg-primary flex items-center rounded-sm p-2"
         onPress={() => {
           mutate({
-            title,
-            content,
+            name,
+            slug: name.toLowerCase().replace(/\s+/g, "-"),
+            rulesText,
+            class: "Creature",
+            colors: ["W"],
+            manaCost: "2W",
+            edition: "Core",
+            createdBy: "mobile-user",
           });
         }}
       >
-        <Text className="text-foreground">Create</Text>
+        <Text className="text-foreground">Create Card</Text>
       </Pressable>
       {error?.data?.code === "UNAUTHORIZED" && (
         <Text className="text-destructive mt-2">
-          You need to be logged in to create a post
+          You need to be logged in to create a card
         </Text>
       )}
     </View>
@@ -126,12 +132,12 @@ function MobileAuth() {
 export default function Index() {
   const queryClient = useQueryClient();
 
-  const postQuery = useQuery(trpc.post.all.queryOptions());
+  const cardQuery = useQuery(trpc.card.list.queryOptions());
 
-  const deletePostMutation = useMutation(
-    trpc.post.delete.mutationOptions({
+  const deleteCardMutation = useMutation(
+    trpc.card.delete.mutationOptions({
       onSettled: () =>
-        queryClient.invalidateQueries(trpc.post.all.queryFilter()),
+        queryClient.invalidateQueries(trpc.card.list.queryFilter()),
     }),
   );
 
@@ -141,31 +147,31 @@ export default function Index() {
       <Stack.Screen options={{ title: "Home Page" }} />
       <View className="bg-background h-full w-full p-4">
         <Text className="text-foreground pb-2 text-center text-5xl font-bold">
-          Create <Text className="text-primary">T3</Text> Turbo
+          Zeeze <Text className="text-primary">Cards</Text>
         </Text>
 
         <MobileAuth />
 
         <View className="py-2">
           <Text className="text-primary font-semibold italic">
-            Press on a post
+            Press on a card
           </Text>
         </View>
 
         <LegendList
-          data={postQuery.data ?? []}
+          data={cardQuery.data ?? []}
           estimatedItemSize={20}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           ItemSeparatorComponent={() => <View className="h-2" />}
-          renderItem={(p) => (
-            <PostCard
-              post={p.item}
-              onDelete={() => deletePostMutation.mutate(p.item.id)}
+          renderItem={(c) => (
+            <CardItem
+              card={c.item}
+              onDelete={() => deleteCardMutation.mutate({ id: c.item.id })}
             />
           )}
         />
 
-        <CreatePost />
+        <CreateCard />
       </View>
     </SafeAreaView>
   );

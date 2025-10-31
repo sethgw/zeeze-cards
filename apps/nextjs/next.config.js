@@ -7,6 +7,9 @@ await jiti.import("./src/env");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  output: "standalone",
+  assetPrefix: process.env.ASSET_PREFIX || undefined,
+
   /** Enables hot reloading for local packages without a build step */
   transpilePackages: [
     "@zeeze/api",

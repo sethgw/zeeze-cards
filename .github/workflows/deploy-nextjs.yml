@@ -1,0 +1,27 @@
+name: Deploy Next.js to Coolify
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/nextjs/**"
+      - "packages/**"
+      - ".github/workflows/deploy-nextjs.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Coolify Deployment
+        run: |
+          curl -X POST "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "actor": "${{ github.actor }}"}'
+
+      - name: Deployment Triggered
+        run: |
+          echo "✅ Deployment triggered on Coolify"
+          echo "📦 Branch: ${{ github.ref_name }}"
+          echo "🔨 Commit: ${{ github.sha }}"
+          echo "👤 Actor: ${{ github.actor }}"

@@ -36,6 +36,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@zeeze/eslint-config": "workspace:*",
     "@zeeze/prettier-config": "workspace:*",
     "@zeeze/tsconfig": "workspace:*",

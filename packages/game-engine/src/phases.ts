@@ -58,8 +58,7 @@ export function advancePhase(state: GameState): GameState {
   const nextPhase = getNextPhase(currentPhase);
 
   // If we're going from "end" to "untap", advance to next turn
-  const newTurn =
-    currentPhase === "end" ? state.turn + 1 : state.turn;
+  const newTurn = currentPhase === "end" ? state.turn + 1 : state.turn;
 
   // If starting new turn, advance to next player
   let newPlayerIndex = state.currentPlayerIndex;
@@ -152,8 +151,7 @@ export function passPriority(state: GameState): GameState {
     return state;
   }
 
-  const nextPriorityIndex =
-    (currentPriorityIndex + 1) % state.players.length;
+  const nextPriorityIndex = (currentPriorityIndex + 1) % state.players.length;
   const nextPriorityPlayer = state.players[nextPriorityIndex];
   if (!nextPriorityPlayer) {
     throw new Error("Next priority player not found");
