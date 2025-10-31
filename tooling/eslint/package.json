@@ -24,9 +24,9 @@
     "typescript-eslint": "^8.46.2"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "@zeeze/prettier-config": "workspace:*",
     "@zeeze/tsconfig": "workspace:*",
-    "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "typescript": "catalog:"

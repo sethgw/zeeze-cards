@@ -16,8 +16,8 @@
     "prettier-plugin-tailwindcss": "^0.7.1"
   },
   "devDependencies": {
-    "@zeeze/tsconfig": "workspace:*",
     "@types/node": "catalog:",
+    "@zeeze/tsconfig": "workspace:*",
     "typescript": "catalog:"
   },
   "prettier": "@zeeze/prettier-config"

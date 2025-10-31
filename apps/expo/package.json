@@ -44,12 +44,12 @@
     "superjson": "2.2.3"
   },
   "devDependencies": {
+    "@types/react": "catalog:react19",
     "@zeeze/api": "workspace:*",
     "@zeeze/eslint-config": "workspace:*",
     "@zeeze/prettier-config": "workspace:*",
     "@zeeze/tailwind-config": "workspace:*",
     "@zeeze/tsconfig": "workspace:*",
-    "@types/react": "catalog:react19",
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
