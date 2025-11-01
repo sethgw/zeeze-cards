@@ -67,8 +67,8 @@ RUN addgroup --system --gid 1001 bunjs && adduser --system --uid 1001 bunjs
 
 # Copy the standalone output from the builder stage
 COPY --from=builder --chown=bunjs:bunjs /app/apps/nextjs/.next/standalone ./
-COPY --from=builder --chown=bunjs:bunjs /app/apps/nextjs/.next/static ./.next/static
-COPY --from=builder --chown=bunjs:bunjs /app/apps/nextjs/public ./public
+COPY --from=builder --chown=bunjs:bunjs /app/apps/nextjs/.next/static ./apps/nextjs/.next/static
+COPY --from=builder --chown=bunjs:bunjs /app/apps/nextjs/public ./apps/nextjs/public
 
 USER bunjs
 
@@ -76,4 +76,4 @@ EXPOSE 4271
 ENV PORT=4271
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["bun", "server.js"]
+CMD ["bun", "apps/nextjs/server.js"]
